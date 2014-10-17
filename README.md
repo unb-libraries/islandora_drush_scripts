@@ -2,7 +2,9 @@
 ##Drush scripts used to maintain our Islandora instances.
 
 ####Purge collection members
-```drush -u 1 --include=/path/to/islandora_drush_scripts/ islandora_purge_collection_members ir:collectionPID```
+```
+drush -u 1 --include=/path/to/islandora_drush_scripts/ islandora_purge_collection_members ir:collectionPID
+```
 
 ##License
 - Drush Islandora Scripts is licensed under the MIT License:
