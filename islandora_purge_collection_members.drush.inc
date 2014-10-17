@@ -76,7 +76,7 @@ EOT;
   }
   else {
     foreach ($objects as $pid) {
-      $repository->puregeObject($pid);
+      $repository->purgeObject($pid);
     }
   }
 }
