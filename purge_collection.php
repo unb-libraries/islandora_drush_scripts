@@ -13,7 +13,7 @@
  * https://github.com/roblib/scripts/blob/master/drush/drupal7/islandora_purge_pids.drush.inc
  */
 
-//drush hook
+
 
 function islandora_purge_pids_drush_command() {
   $items = array();
@@ -22,7 +22,7 @@ function islandora_purge_pids_drush_command() {
     'description' => "deletes all objects in a collection.  Please use with caution as purged objects are unrecoverable!  
       You will have to use the drush -u switch or you may not have permission to purge some objects.",
     'arguments' => array(
-      'query_file' => 'The pid of the collection object',
+      'collection_pid' => 'The pid of the collection object',
       'interactive' => 'if TRUE then you will be asked to confirm the purge action for each object'
     ),
     'examples' => array(
@@ -36,24 +36,26 @@ function islandora_purge_pids_drush_command() {
 }
 
 //drush hook
-function drush_islandora_purge_pids($query_file, $interactive) {
+function drush_islandora_purge_pids($collection_pid, $interactive) {
   drush_print('Current working directory ' . getcwd());
-  if (isset($query_file)) {
-    drush_print("Used file $query_file \n");
-  }
-  else {
-    drush_print("no query file specified");
+  if (!isset($collection_pid)) {
+    drush_print("No collection PID specified");
     return;
   }
-  islandora_purge_pids_doAction($query_file, $interactive);
+  islandora_purge_pids_doAction($collection_pid, $interactive);
 }
 
 //just a function
-function islandora_purge_pids_doAction($query_file, $interactive) {
+function islandora_purge_pids_doAction($collection_pid, $interactive) {
   global $user;
   $tuque = islandora_get_tuque_connection($user);
   $repository = $tuque->repository;
-  $query = file_get_contents($query_file);
+
+  $query = <<<EOT
+select \$object from <#ri>
+where \$object <fedora-rels-ext:isMemberOfCollection> <info:fedora/$collection_pid>
+EOT;
+
   $results = $repository->ri->itqlQuery($query);
   $objects = islandora_purge_pids_sparql_results_as_array($results);
   foreach ($objects as $object) {
