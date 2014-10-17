@@ -15,10 +15,10 @@
 
 
 
-function islandora_purge_pids_drush_command() {
+function islandora_purge_collection_members_drush_command() {
   $items = array();
 
-  $items['islandora_purge_pids'] = array(
+  $items['islandora_purge_collection_members'] = array(
     'description' => "deletes all objects in a collection.  Please use with caution as purged objects are unrecoverable!  
       You will have to use the drush -u switch or you may not have permission to purge some objects.",
     'arguments' => array(
@@ -26,9 +26,9 @@ function islandora_purge_pids_drush_command() {
       'interactive' => 'if TRUE then you will be asked to confirm the purge action for each object'
     ),
     'examples' => array(
-      'drush islandora_purge_pids path_to_query.txt TRUE',
+      'drush islandora_purge_collection_memberss parent:pid TRUE',
     ),
-    'aliases' => array('islandorapp'),
+    'aliases' => array('islandorapc'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_LOGIN, // we can pass in users id on the command line using drush -u.
   );
 
@@ -36,17 +36,17 @@ function islandora_purge_pids_drush_command() {
 }
 
 //drush hook
-function drush_islandora_purge_pids($collection_pid, $interactive) {
+function drush_islandora_purge_collection_members($collection_pid, $interactive) {
   drush_print('Current working directory ' . getcwd());
   if (!isset($collection_pid)) {
     drush_print("No collection PID specified");
     return;
   }
-  islandora_purge_pids_doAction($collection_pid, $interactive);
+  islandora_purge_collection_members_doAction($collection_pid, $interactive);
 }
 
 //just a function
-function islandora_purge_pids_doAction($collection_pid, $interactive) {
+function islandora_purge_collection_members_doAction($collection_pid, $interactive) {
   global $user;
   $tuque = islandora_get_tuque_connection($user);
   $repository = $tuque->repository;
@@ -57,7 +57,7 @@ where \$object <fedora-rels-ext:isMemberOfCollection> <info:fedora/$collection_p
 EOT;
 
   $results = $repository->ri->itqlQuery($query);
-  $objects = islandora_purge_pids_sparql_results_as_array($results);
+  $objects = islandora_purge_collection_members_sparql_results_as_array($results);
   foreach ($objects as $object) {
     drush_print($object);
   }
@@ -87,7 +87,7 @@ EOT;
  * @param SimpleXMLElement $content
  * @return array
  */
-function islandora_purge_pids_sparql_results_as_array($results) {
+function islandora_purge_collection_members_sparql_results_as_array($results) {
   $resultsarray = array();
   foreach($results as $result){
     $resultsarray[] = $result['object']['value'];
