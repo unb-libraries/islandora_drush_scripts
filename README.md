@@ -9,5 +9,5 @@ drush -u 1 --include=/path/to/islandora_drush_scripts/ islandora_purge_collectio
 ##License
 - Drush Islandora Scripts is licensed under the MIT License:
   - http://opensource.org/licenses/mit-license.html
-- Attribution is not required  Drush Islandora Scripts, but much appreciated:
+- Attribution is not required, but much appreciated:
   - `Drush Islandora Scripts by UNB Libraries`
